@@ -8,8 +8,6 @@ pygame.init()
 
 WIDTH, HEIGHT = 1920, 1080
 FPS = 60
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Battleship Game")
