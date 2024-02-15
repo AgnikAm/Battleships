@@ -5,7 +5,6 @@ import pygame
 from pygame import Surface, Rect
 from pygame.time import Clock
 
-from threading import Thread
 from enum import Enum, auto
 
 from dataclasses import dataclass
@@ -17,6 +16,8 @@ from game import GameScreen
 
 ASSETS = 'assets'  # ścieżki do assetów przechowywać w stałych
 
+BLANK = (255, 255, 255)
+
 
 class State(Enum):
     MENU = auto()
@@ -25,9 +26,9 @@ class State(Enum):
     AI_MOVE = auto()
 
 
-class App(Thread):
+class App:
     TITLE = 'Battleships'
-    WINDOW_SIZE = 1920, 1080
+    WINDOW_SIZE = 1024, 768 #1920, 1080
     FPS = 60
 
     state: State
@@ -59,33 +60,39 @@ class App(Thread):
         self.placement = PlacementScreen(self.surface)
         self.game = GameScreen(self.surface)
 
+    def clear(self) -> None:
+        self.surface.fill(BLANK)
+
     def go_to_menu(self) -> None:
         self.state = State.MENU
+        self.clear()
 
     def go_to_placement(self) -> None:
         # rozmieszczenie przez komputer
         # reszta kodu do przygotowania rozmieszczania przez gracza
         self.state = State.PLACEMENT
+        self.clear()
 
     def go_to_game(self) -> None:
+        self.clear()
         pass
 
     def quit(self) -> None:
         self.running = False
 
     def handle_events(self) -> None:
+        mouse = pygame.mouse.get_pos()
+        
         for event in pygame.event.get():
             match event.type:
                 case pygame.QUIT:
                     self.running = False
 
                 case pygame.MOUSEBUTTONDOWN if self.state == State.MENU:
-                    mouse = pygame.mouse.get_pos()
-
-                    if self.menu.start.collidepoint(mouse):
+                    if self.menu.start.rect.collidepoint(mouse):
                         self.go_to_placement()
 
-                    elif self.menu.quit.collidepoint(mouse):
+                    elif self.menu.quit.rect.collidepoint(mouse):
                         self.quit()
 
                 case pygame.MOUSEBUTTONDOWN if self.state == State.PLACEMENT:
@@ -120,10 +127,10 @@ class App(Thread):
         while self.running:
             self.handle_events()
             self.handle_state()
+            pygame.display.flip()
             
         # coś na koniec
 
 if __name__ == '__main__':
     app = App()
     app.run()
-    app.join()

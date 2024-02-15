@@ -1,11 +1,19 @@
 import pygame
 from pygame import Surface, Rect
 
+from component import Component
+from drawing import draw_text
+
+BACKGROUND = 'assets\menu_bg.jpg'
+
 
 class MenuScreen:
     surface: Surface
-    start: Rect
-    quit: Rect
+
+    background: Surface
+    start: Component
+    quit: Component
+
 
     def __init__(self, surface: Surface) -> None:
         self.surface = surface
@@ -13,25 +21,28 @@ class MenuScreen:
         width, height = surface.get_size()
 
         self.start = draw_text(
-            surface,  # funkcję trzeba napisać tak, żeby nie zmieniała stanu ekranu tylko zwracała obiekt
             "Start", 
             None, 
-            70, 
+            height // 12, 
             (101, 88, 130), 
-            width // 2, 
-            height // 3 + 100
+            (width // 2, height // 3)
         )
 
         self.quit = draw_text(
-            surface, 
             "Quit", 
             None, 
-            70, 
+            height // 12, 
             (101, 88, 130), 
-            width // 2, 
-            height // 3 + 200
+            (width // 2, height // 3 + int(height / 10))
+        )
+
+        self.background = pygame.transform.scale(
+            pygame.image.load(BACKGROUND), 
+            surface.get_size()
         )
 
     def draw(self) -> None:
-        # tu wywołać surface.blit()
-        pass
+        self.surface.blit(self.background, (0, 0))
+
+        self.start.blit(self.surface)
+        self.quit.blit(self.surface)
