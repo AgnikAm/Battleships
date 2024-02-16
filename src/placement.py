@@ -1,5 +1,5 @@
 import pygame
-from pygame import Surface, Rect, draw
+from pygame import Surface, Rect, draw, image
 from typing import Optional
 
 from component import Component
@@ -7,19 +7,24 @@ from drawing import draw_text
 from grid import Grid
 
 BACKGROUND = 'assets\game_bg.jpg'
+MENU_ICON = 'assets\home-icon.png'
+ACCEPT_ICON = 'assets\check-icon.png'
 
 class PlacementScreen:
     surface: Surface
+    background: Surface
     width: int
     height: int
-    
-    menu: Rect
-    accept: Rect
-    grid: dict[tuple[int, int], Component]
 
-    background: Surface
+    bar: Rect
     header: Component
-    board: Grid
+    menu: Rect
+    menu_icon: Surface
+    menu_icon_rect: Rect
+    accept: Rect
+    accept_icon: Surface
+    menu_icon_rect: Rect
+    grid: Grid
 
     def __init__(self, surface: Surface) -> None:
         self.surface = surface
@@ -31,52 +36,84 @@ class PlacementScreen:
             surface.get_size()
         )
 
+        self.bar = Rect(
+            self.surface.get_rect().centerx - (self.height * 0.75 - self.height * 0.75 // 10) // 2,
+            0,
+            self.height * 0.75,
+            self.height * 0.1
+        )
+
         self.header = draw_text(
             "Prepare for battle",
             None,
             self.height // 15,
             (255, 255, 255),
-            (self.width // 2, self.height // 80)
+            (self.bar.centerx, self.bar.height // 5)
         )
 
         self.menu = Rect(
             0,
-            self.height - self.width // 8,
-            self.width // 8,
-            self.width // 8
+            self.height - self.width // 10,
+            self.width // 10,
+            self.width // 10
+        )
+
+        self.menu_icon = pygame.transform.scale(
+            image.load(MENU_ICON),
+            (self.width * 0.05, self.width * 0.05)
+        )
+
+        self.menu_icon_rect = self.menu_icon.get_rect(
+            center = (self.menu.centerx - self.width * 0.015, self.menu.centery + self.height * 0.02)
         )
 
         self.accept = Rect(
-            self.width - self.width // 8,
-            self.height - self.width // 8,
-            self.width // 8,
-            self.width // 8
+            self.width - self.width // 10,
+            self.height - self.width // 10,
+            self.width // 10,
+            self.width // 10
         )
 
-        self.board = Grid(
-            self.surface,
-            (self.width // 2, self.width // 2),
-            (255, 255, 255),
-            (self.width // 4, self.height // 6),
-            (10, 10),
-            (80, 181, 152),
-            (101, 88, 130)
+        self.accept_icon = pygame.transform.scale(
+            image.load(ACCEPT_ICON),
+            (self.width * 0.05, self.width * 0.05)
         )
+
+        self.accept_icon_rect = self.menu_icon.get_rect(
+            center = (self.accept.centerx + self.width * 0.015, self.accept.centery + self.height * 0.02)
+        )
+
+        self.grid = Grid(
+            self.surface,
+            (self.height * 0.75, self.height * 0.75),
+            (self.surface.get_rect().centerx - (self.height * 0.75 - self.height * 0.75 // 10) // 2, self.height // 5),
+            self.height * 0.75 // 10,
+            (142, 70, 156),
+            (148, 124, 112)
+        )
+
         
     def place_ship(self, position: tuple[int, int]) -> None:
         # grid[position] = coś  # nowy wygląd kwadratu na pozycji
         pass
 
     def collide_field(self, position: tuple[int, int]) -> Optional[tuple[int, int]]:
-        for pos, component in self.grid.items():
-            if component.rect.collidepont(position):
+        for pos, component in self.grid.cells.items():
+            if component.rect.collidepoint(position):
                 return pos
 
     def draw(self) -> None:
+
         self.surface.blit(self.background, (0, 0))
         
+        draw.rect(self.surface, (82, 53, 38), self.bar)
         self.header.blit(self.surface)
-        draw.circle(self.surface, (94, 68, 46), self.menu.bottomleft, self.width // 10)
-        draw.circle(self.surface, (94, 68, 46), self.accept.bottomright, self.width // 10)
-        self.board.draw()
+
+        draw.circle(self.surface, (82, 53, 38), self.menu.bottomleft, self.width // 10)
+        self.surface.blit(self.menu_icon, self.menu_icon_rect)
+
+        draw.circle(self.surface, (82, 53, 38), self.accept.bottomright, self.width // 10)
+        self.surface.blit(self.accept_icon, self.accept_icon_rect)
+
+        self.grid.draw()
         

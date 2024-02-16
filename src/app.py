@@ -28,7 +28,7 @@ class State(Enum):
 
 class App:
     TITLE = 'Battleships'
-    WINDOW_SIZE = 1024, 768 #1920, 1080
+    WINDOW_SIZE = 1920, 1020 # 1024, 768
     FPS = 60
 
     state: State
@@ -99,6 +99,12 @@ class App:
                     if self.placement.menu.collidepoint(mouse):
                         self.go_to_menu()
 
+                case pygame.MOUSEMOTION if self.state == State.PLACEMENT:
+                    if self.placement.collide_field(mouse):
+                        self.placement.grid.highlight(self.placement.collide_field(mouse))
+                    else:
+                        self.placement.grid.highlighted = None
+
                     # elif inne rzeczy
                         
                 case pygame.MOUSEBUTTONDOWN if self.state == State.MOVE:
@@ -114,7 +120,7 @@ class App:
 
             case State.PLACEMENT:
                 self.placement.draw()
-
+                
             case State.MOVE:
                 pass
 
