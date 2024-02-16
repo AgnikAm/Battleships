@@ -3,6 +3,7 @@ from pygame import Surface, Rect
 
 from component import Component
 from drawing import draw_text
+from drawing import LIGHT_PURPLE
 
 BACKGROUND = 'assets\menu_bg.jpg'
 
@@ -29,7 +30,7 @@ class MenuScreen:
             "Battleships", 
             None, 
             int(height * 0.13), 
-            (101, 88, 130), 
+            LIGHT_PURPLE, 
             (width // 2, height // 4)
         )
 
@@ -37,7 +38,7 @@ class MenuScreen:
             "Start", 
             None, 
             int(height * 0.08), 
-            (101, 88, 130), 
+            LIGHT_PURPLE, 
             (width // 2, height // 3 + 100)
         )
 
@@ -45,7 +46,7 @@ class MenuScreen:
             "Quit", 
             None, 
             int(height * 0.08), 
-            (101, 88, 130), 
+            LIGHT_PURPLE, 
             (width // 2, height // 3 + 200)
         )
 

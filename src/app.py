@@ -14,10 +14,9 @@ from placement import PlacementScreen
 from menu import MenuScreen
 from game import GameScreen
 
+from drawing import WHITE
+
 ASSETS = 'assets'  # ścieżki do assetów przechowywać w stałych
-
-BLANK = (255, 255, 255)
-
 
 class State(Enum):
     MENU = auto()
@@ -61,7 +60,7 @@ class App:
         self.game = GameScreen(self.surface)
 
     def clear(self) -> None:
-        self.surface.fill(BLANK)
+        self.surface.fill(WHITE)
 
     def go_to_menu(self) -> None:
         self.state = State.MENU

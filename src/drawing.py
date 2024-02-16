@@ -3,6 +3,13 @@ from pygame import Surface, Rect
 from typing import Optional
 from component import Component
 
+WHITE = (255, 255, 255)
+CHATHAMS_BLUE = (35, 87, 107)
+LIGHT_BROWN = (148, 124, 112)
+DARK_BROWN = (82, 53, 38)
+PINK = (142, 70, 156)
+LIGHT_PURPLE = (101, 88, 130)
+
 def draw_text(
         text: str, 
         font: Optional[str], 

@@ -4,10 +4,13 @@ from component import Component
 from typing import Optional
 
 from drawing import draw_text, draw_full_rect
+from drawing import WHITE, CHATHAMS_BLUE
 
 class Grid:
     surface: Surface
     size: tuple[int, int]
+    cols: int
+    rows: int
     upperleft: tuple[int, int]
     cell_size: int
     cell_color: tuple[int, int, int]
@@ -15,7 +18,9 @@ class Grid:
 
     cells: dict[tuple[int, int], Component]
     axis_x: Rect
+    col_labels: dict
     axis_y: Rect
+    row_labels: dict
 
     highlighted: Optional[tuple[int, int]]
 
@@ -23,7 +28,9 @@ class Grid:
     def __init__(
             self, 
             surface: Surface,
-            size: tuple[int, int], 
+            size: tuple[int, int],
+            cols: int,
+            rows: int,
             upperleft: tuple[int, int],
             cell_size: int, 
             cell_color: tuple[int, int, int],
@@ -32,6 +39,8 @@ class Grid:
         
         self.surface = surface
         self.size = size
+        self.cols = cols
+        self.rows = rows
         self.upperleft = upperleft
         self.cell_size = cell_size
         self.cell_color = cell_color
@@ -40,22 +49,32 @@ class Grid:
 
         self.cells = dict(
             ((row, col), draw_full_rect(cell_size, cell_color, upperleft, (row, col)))
-            for row in range(10)
-            for col in range(10)
+            for row in range(rows)
+            for col in range(cols)
+        )
+
+        self.axis_x = Rect(
+            upperleft[0],
+            upperleft[1] - cell_size,
+            cell_size * cols,
+            cell_size
+        )
+
+        self.col_labels = dict(
+            (col, chr(ord('A') + col))
+            for col in range(cols)
         )
 
         self.axis_y = Rect(
             upperleft[0] - cell_size,
             upperleft[1],
             cell_size,
-            cell_size * 10
+            cell_size * rows
         )
 
-        self.axis_x = Rect(
-            upperleft[0],
-            upperleft[1] - cell_size,
-            cell_size * 10,
-            cell_size
+        self.row_labels = dict(
+            (row, str(row + 1))
+            for row in range(rows)
         )
 
         self.highlighted = None
@@ -69,55 +88,52 @@ class Grid:
             self.upperleft, 
             cell
         )
-
-        '''if self.highlighted is not None:
-            self.cells[self.highlight] = draw_full_rect(
-            self.cell_size, 
-            self.cell_color,
-            self.upperleft,
-            self.highlighted
-        )'''
         
         self.highlighted = cell
 
-    def assign_axis_x(self, col) -> Component:
 
-        letter_text = chr(ord('A') + col)
-        return draw_text(letter_text,
+    def draw_cols(self, col: int) -> Component:
+
+        centerx = self.axis_x.x + col * self.cell_size + self.cell_size // 2
+        centery = self.axis_x.y + self.cell_size // 4
+
+        return draw_text(self.col_labels[col],
                          None,
                          int(self.size[1] * 0.08),
-                         (255, 255, 255),
-                         (self.axis_x.x + col * self.cell_size + self.cell_size // 2,
-                         self.axis_x.y + self.cell_size // 4)
-                        )
+                         WHITE,
+                         (centerx, centery)
+        )
     
-    def assign_axis_y(self, row) -> Component:
 
-        number_text = str(row + 1)
-        return draw_text(number_text,
+    def draw_rows(self, row: int) -> Component:
+
+        centerx = self.axis_y.x + self.cell_size // 2
+        centery = self.axis_y.y + row * self.cell_size + self.cell_size // 4
+
+        return draw_text(self.row_labels[row],
                          None,
                          int(self.size[1] * 0.08),
-                         (255, 255, 255),
-                         (self.axis_y.x + self.cell_size // 2,
-                         self.axis_y.y + row * self.cell_size + self.cell_size // 4)
-                        )
+                         WHITE,
+                         (centerx, centery)
+        )
 
 
     def draw(self) -> None:
 
-        draw.rect(self.surface, (35, 87, 107), self.axis_x)
-        draw.rect(self.surface, (35, 87, 107), self.axis_y)
+        draw.rect(self.surface, CHATHAMS_BLUE, self.axis_x)
+        draw.rect(self.surface, CHATHAMS_BLUE, self.axis_y)
 
-        for i in range(10):
-            self.assign_axis_y(i).blit(self.surface)
-            self.assign_axis_x(i).blit(self.surface)
+        for i in range(self.cols):
+            self.draw_cols(i).blit(self.surface)
+        for i in range(self.rows):
+            self.draw_rows(i).blit(self.surface)
 
         for cell in self.cells.values():
             draw.rect(self.surface,
-                      (255, 255, 255),
+                      WHITE,
                       cell.rect,
                       1
-                    )
+            )
             
         if self.highlighted is not None:
             self.cells[self.highlighted].blit(self.surface)
