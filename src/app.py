@@ -98,6 +98,9 @@ class App:
                     if self.placement.menu.collidepoint(mouse):
                         self.go_to_menu()
 
+                    elif self.placement.collide_field(mouse):
+                        self.placement.place_ship(self.placement.collide_field(mouse))
+
                 case pygame.MOUSEMOTION if self.state == State.PLACEMENT:
                     if self.placement.collide_field(mouse):
                         self.placement.grid.highlight(self.placement.collide_field(mouse))

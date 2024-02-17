@@ -17,12 +17,14 @@ class Grid:
     highlighted_color: tuple[int, int, int]
 
     cells: dict[tuple[int, int], Component]
+    highlighted_cells: dict[tuple[int, int], Component]
     axis_x: Rect
     col_labels: dict
     axis_y: Rect
     row_labels: dict
 
     highlighted: Optional[tuple[int, int]]
+    occupied: Optional[dict[tuple[int, int]]]
 
 
     def __init__(
@@ -53,6 +55,12 @@ class Grid:
             for col in range(cols)
         )
 
+        self.highlighted_cells = dict(
+            ((row, col), draw_full_rect(cell_size, highlighted_color, upperleft, (row, col)))
+            for row in range(rows)
+            for col in range(cols)
+        )
+
         self.axis_x = Rect(
             upperleft[0],
             upperleft[1] - cell_size,
@@ -78,17 +86,15 @@ class Grid:
         )
 
         self.highlighted = None
+
+        self.occupied = dict(
+            ((row, col), False)
+            for row in range(rows)
+            for col in range(cols)
+        )
         
 
     def highlight(self, cell: tuple[int, int]) -> None:
-
-        self.cells[cell] = draw_full_rect(
-            self.cell_size, 
-            self.highlighted_color,
-            self.upperleft, 
-            cell
-        )
-        
         self.highlighted = cell
 
 
@@ -134,7 +140,11 @@ class Grid:
                       cell.rect,
                       1
             )
+
+        for cell in self.cells.keys():
+            if self.occupied[cell]:
+                self.cells[cell].blit(self.surface)
             
         if self.highlighted is not None:
-            self.cells[self.highlighted].blit(self.surface)
+            self.highlighted_cells[self.highlighted].blit(self.surface)
             

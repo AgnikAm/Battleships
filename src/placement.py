@@ -4,12 +4,15 @@ from typing import Optional
 
 from component import Component
 from grid import Grid
+from gameboard import GameBoard
+from ship import Ship
 from drawing import draw_text
 from drawing import WHITE, LIGHT_BROWN, DARK_BROWN, PINK
 
 BACKGROUND = 'assets\game_bg.jpg'
 MENU_ICON = 'assets\home-icon.png'
 ACCEPT_ICON = 'assets\check-icon.png'
+
 
 class PlacementScreen:
     surface: Surface
@@ -19,12 +22,15 @@ class PlacementScreen:
 
     bar: Rect
     header: Component
+
     menu: Rect
     menu_icon: Surface
     menu_icon_rect: Rect
+
     accept: Rect
     accept_icon: Surface
     menu_icon_rect: Rect
+
     grid: Grid
 
     def __init__(self, surface: Surface) -> None:
@@ -100,14 +106,15 @@ class PlacementScreen:
             10,
             (self.surface.get_rect().centerx - (self.height * 0.75 - self.height * 0.75 // 10) // 2, self.height // 5),
             self.height * 0.75 // 10,
-            PINK,
+            DARK_BROWN,
             LIGHT_BROWN
         )
-
+        
         
     def place_ship(self, position: tuple[int, int]) -> None:
+        self.grid.occupied[position] = True
+
         # grid[position] = coś  # nowy wygląd kwadratu na pozycji
-        pass
 
 
     def collide_field(self, position: tuple[int, int]) -> Optional[tuple[int, int]]:
