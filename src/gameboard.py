@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Iterator
 
 from ship import Ship
 
@@ -6,9 +6,10 @@ from ship import Ship
 class GameBoard:
     rows: int
     cols: int
-    ships_lens: list[int]
-    ships: list[Ship]
+    ships: Iterator[Ship]
+    current_ship: Optional[Ship]
     content: dict[tuple[int, int], Ship]
+    ready: bool
 
     def __init__(
             self,
@@ -19,25 +20,36 @@ class GameBoard:
         
         self.rows = rows
         self.cols = cols
-        self.ships_lens = ships_lens
-        self.ships = []
+        self.ships = iter(Ship(len) for len in ships_lens)
+        self.current_ship = next(self.ships)
+        self.content = dict()
+        self.ready = False
+   
 
-        for ship_len in ships_lens:
-            self.ships.append(Ship(ship_len))
+    def add(self, coordinates: tuple[int, int]) -> bool:
+        if not self.current_ship.check(coordinates):
+            return False
+        
+        self.current_ship.add(coordinates, True)
 
-        self.content = dict(
-            ((row, col), None)
-            for row in range(rows)
-            for col in range(cols)
-        )
+        if not self.current_ship.placed:
+            return True
+        
+        self.update_content()
+        self.current_ship = next(self.ships, None)
 
-    def is_ready(self) -> bool:
-        return not any(ship.placed == False for ship in self.ships)
+        if self.current_ship is None:
+            self.ready = True
+
+        return True
+
 
     def update_content(self) -> None:
-        # uaktualnienie słownika content po ułożeniu statków
-        for pos in self.content.keys():
-            for ship in self.ships:
-                if pos in ship.coordinates:
-                    self.content[pos] = ship
+        for coords in self.current_ship.coordinates:
+            self.content[coords] = self.current_ship
+
+    
+    def auto_place(self, ships_lens: list[int]) -> None:
+        pass
+        
         

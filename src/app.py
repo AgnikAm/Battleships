@@ -13,6 +13,7 @@ from abc import ABC, abstractmethod
 from placement import PlacementScreen
 from menu import MenuScreen
 from game import GameScreen
+from gameboard import GameBoard
 
 from drawing import WHITE
 
@@ -29,6 +30,8 @@ class App:
     TITLE = 'Battleships'
     WINDOW_SIZE = 1920, 1020 # 1024, 768
     FPS = 60
+    BOARD_SIZE = 10, 10
+    SHIPS_LENS = [4, 3, 2, 2, 1, 1]
 
     state: State
     running: bool
@@ -39,6 +42,9 @@ class App:
     menu: MenuScreen
     placement: PlacementScreen
     game: GameScreen
+
+    player: GameBoard
+    enemy: GameBoard
 
     def __init__(self) -> None:
         super().__init__()
@@ -59,6 +65,16 @@ class App:
         self.placement = PlacementScreen(self.surface)
         self.game = GameScreen(self.surface)
 
+        self.player = GameBoard(
+            *App.BOARD_SIZE,
+            App.SHIPS_LENS
+        )
+
+        self.enemy = GameBoard(
+            *App.BOARD_SIZE,
+            App.SHIPS_LENS
+        )
+
     def clear(self) -> None:
         self.surface.fill(WHITE)
 
@@ -67,14 +83,14 @@ class App:
         self.clear()
 
     def go_to_placement(self) -> None:
-        # rozmieszczenie przez komputer
+        self.enemy.auto_place(App.SHIPS_LENS)
         # reszta kodu do przygotowania rozmieszczania przez gracza
         self.state = State.PLACEMENT
         self.clear()
 
     def go_to_game(self) -> None:
         self.clear()
-        pass
+        self.state = State.MOVE
 
     def quit(self) -> None:
         self.running = False
@@ -98,12 +114,13 @@ class App:
                     if self.placement.menu.collidepoint(mouse):
                         self.go_to_menu()
 
-                    elif self.placement.collide_field(mouse):
-                        self.placement.place_ship(self.placement.collide_field(mouse))
-
+                    elif coords := self.placement.collide_field(mouse):
+                        self.player.add(coords) and self.placement.place_ship(coords)
+                        
                 case pygame.MOUSEMOTION if self.state == State.PLACEMENT:
-                    if self.placement.collide_field(mouse):
-                        self.placement.grid.highlight(self.placement.collide_field(mouse))
+                    if coords := self.placement.collide_field(mouse):
+                        self.placement.grid.highlight(coords)
+                        
                     else:
                         self.placement.grid.highlighted = None
 
@@ -122,6 +139,8 @@ class App:
 
             case State.PLACEMENT:
                 self.placement.draw()
+                if self.player.ready:
+                    self.go_to_game()
                 
             case State.MOVE:
                 pass

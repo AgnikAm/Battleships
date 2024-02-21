@@ -4,8 +4,6 @@ from typing import Optional
 
 from component import Component
 from grid import Grid
-from gameboard import GameBoard
-from ship import Ship
 from drawing import draw_text
 from drawing import WHITE, LIGHT_BROWN, DARK_BROWN, PINK
 
@@ -43,14 +41,12 @@ class PlacementScreen:
             surface.get_size()
         )
 
-
         self.bar = Rect(
             self.surface.get_rect().centerx - (self.height * 0.75 - self.height * 0.75 // 10) // 2,
             0,
             self.height * 0.75,
             self.height * 0.1
         )
-
 
         self.header = draw_text(
             "Prepare for battle",
@@ -60,7 +56,6 @@ class PlacementScreen:
             (self.bar.centerx, self.bar.height // 5)
         )
 
-
         self.menu = Rect(
             0,
             self.height - self.width // 10,
@@ -68,17 +63,14 @@ class PlacementScreen:
             self.width // 10
         )
 
-
         self.menu_icon = pygame.transform.scale(
             image.load(MENU_ICON),
             (self.width * 0.05, self.width * 0.05)
         )
 
-
         self.menu_icon_rect = self.menu_icon.get_rect(
             center = (self.menu.centerx - self.width * 0.015, self.menu.centery + self.height * 0.02)
         )
-
 
         self.accept = Rect(
             self.width - self.width // 10,
@@ -87,17 +79,14 @@ class PlacementScreen:
             self.width // 10
         )
 
-
         self.accept_icon = pygame.transform.scale(
             image.load(ACCEPT_ICON),
             (self.width * 0.05, self.width * 0.05)
         )
 
-
         self.accept_icon_rect = self.menu_icon.get_rect(
             center = (self.accept.centerx + self.width * 0.015, self.accept.centery + self.height * 0.02)
         )
-
 
         self.grid = Grid(
             self.surface,
