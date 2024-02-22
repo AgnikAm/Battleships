@@ -4,11 +4,11 @@ from typing import Optional
 from component import Component
 
 WHITE = (255, 255, 255)
-CHATHAMS_BLUE = (35, 87, 107)
-LIGHT_BROWN = (148, 124, 112)
-DARK_BROWN = (82, 53, 38)
-PINK = (142, 70, 156)
 LIGHT_PURPLE = (101, 88, 130)
+DARK_BROWN = (82, 53, 38)
+LIGHT_BROWN = (148, 124, 112)
+CHATHAMS_BLUE = (35, 87, 107)
+YELLOW = (209, 171, 67)
 
 def draw_text(
         text: str, 
@@ -17,6 +17,7 @@ def draw_text(
         color: tuple[int, int, int], 
         midtop: tuple[int, int]
 ) -> Component:
+    
     surface = pygame.font\
         .Font(font, size)\
         .render(text, 1, color)
@@ -25,6 +26,7 @@ def draw_text(
     rect.midtop = midtop
 
     return Component(surface, rect)
+
 
 def draw_full_rect(
         size: int, 

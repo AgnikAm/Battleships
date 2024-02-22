@@ -1,37 +1,30 @@
-from collections.abc import Callable
-from typing import Any, Iterable, Mapping
-
 import pygame
-from pygame import Surface, Rect
+from pygame import Surface
 from pygame.time import Clock
+import copy
 
 from enum import Enum, auto
 
-from dataclasses import dataclass
-from abc import ABC, abstractmethod
-
-from placement import PlacementScreen
 from menu import MenuScreen
-from game import GameScreen
+from placement import PlacementScreen
+from gamescreen import GameScreen
 from gameboard import GameBoard
 
 from drawing import WHITE
 
-ASSETS = 'assets'  # ścieżki do assetów przechowywać w stałych
 
 class State(Enum):
     MENU = auto()
     PLACEMENT = auto()
     MOVE = auto()
-    AI_MOVE = auto()
-
+    ENEMY_MOVE = auto()
 
 class App:
     TITLE = 'Battleships'
     WINDOW_SIZE = 1920, 1020 # 1024, 768
     FPS = 60
     BOARD_SIZE = 10, 10
-    SHIPS_LENS = [4, 3, 2, 2, 1, 1]
+    SHIPS_LENS = [4, 3, 3, 2, 2, 2, 1, 1]
 
     state: State
     running: bool
@@ -63,37 +56,45 @@ class App:
 
         self.menu = MenuScreen(self.surface)
         self.placement = PlacementScreen(self.surface)
-        self.game = GameScreen(self.surface)
+        self.game = GameScreen(self.surface, self.placement.grid.occupied)
 
         self.player = GameBoard(
             *App.BOARD_SIZE,
-            App.SHIPS_LENS
+            App.SHIPS_LENS,
+            False
         )
 
         self.enemy = GameBoard(
             *App.BOARD_SIZE,
-            App.SHIPS_LENS
+            App.SHIPS_LENS,
+            True
         )
+
 
     def clear(self) -> None:
         self.surface.fill(WHITE)
 
-    def go_to_menu(self) -> None:
+
+    def to_menu(self) -> None:
         self.state = State.MENU
         self.clear()
 
-    def go_to_placement(self) -> None:
-        self.enemy.auto_place(App.SHIPS_LENS)
-        # reszta kodu do przygotowania rozmieszczania przez gracza
+
+    def to_placement(self) -> None:
+        self.enemy.auto_place()
+        self.game.update_ships(self.game.grid_enemy, self.enemy)
         self.state = State.PLACEMENT
         self.clear()
 
-    def go_to_game(self) -> None:
-        self.clear()
+
+    def to_game(self) -> None:
         self.state = State.MOVE
+        self.clear()
+
 
     def quit(self) -> None:
         self.running = False
+
 
     def handle_events(self) -> None:
         mouse = pygame.mouse.get_pos()
@@ -105,18 +106,21 @@ class App:
 
                 case pygame.MOUSEBUTTONDOWN if self.state == State.MENU:
                     if self.menu.start.rect.collidepoint(mouse):
-                        self.go_to_placement()
-
-                    elif self.menu.quit.rect.collidepoint(mouse):
+                        self.to_placement()
+                    
+                    if self.menu.quit.rect.collidepoint(mouse):
                         self.quit()
 
                 case pygame.MOUSEBUTTONDOWN if self.state == State.PLACEMENT:
-                    if self.placement.menu.collidepoint(mouse):
-                        self.go_to_menu()
+                    if self.placement.menu_icon_rect.collidepoint(mouse):
+                        self.to_menu()
 
-                    elif coords := self.placement.collide_field(mouse):
+                    if self.placement.accept_icon_rect.collidepoint(mouse) and self.player.ready:
+                        self.to_game()
+
+                    if (coords := self.placement.collide_field(mouse)) and not self.player.ready:
                         self.player.add(coords) and self.placement.place_ship(coords)
-                        
+
                 case pygame.MOUSEMOTION if self.state == State.PLACEMENT:
                     if coords := self.placement.collide_field(mouse):
                         self.placement.grid.highlight(coords)
@@ -124,13 +128,18 @@ class App:
                     else:
                         self.placement.grid.highlighted = None
 
-                    # elif inne rzeczy
-                        
                 case pygame.MOUSEBUTTONDOWN if self.state == State.MOVE:
-                    pass
+                    if self.game.menu_icon_rect.collidepoint(mouse):
+                        self.to_menu()
 
-                case _:
-                    pass
+                case pygame.MOUSEMOTION if self.state == State.MOVE:
+                    if coords := self.game.collide_field(mouse):
+                        self.game.grid_enemy.highlight(coords)
+                        
+                    else:
+                        self.game.grid_enemy.highlighted = None
+
+
 
     def handle_state(self) -> None:
         match self.state:
@@ -139,14 +148,13 @@ class App:
 
             case State.PLACEMENT:
                 self.placement.draw()
-                if self.player.ready:
-                    self.go_to_game()
                 
             case State.MOVE:
+                self.game.draw()
+
+            case State.ENEMY_MOVE:
                 pass
 
-            case State.AI_MOVE:
-                pass
 
     def run(self) -> None:
         self.running = True
@@ -155,9 +163,8 @@ class App:
             self.handle_events()
             self.handle_state()
             pygame.display.flip()
-            
-        # coś na koniec
 
+    
 if __name__ == '__main__':
     app = App()
     app.run()

@@ -4,15 +4,15 @@ from typing import Optional
 
 from component import Component
 from grid import Grid
+from gameboard import GameBoard
 from drawing import draw_text
-from drawing import WHITE, LIGHT_BROWN, DARK_BROWN
+from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, YELLOW
 
 BACKGROUND = 'assets\game_bg.jpg'
 MENU_ICON = 'assets\home-icon.png'
-ACCEPT_ICON = 'assets\check-icon.png'
 
 
-class PlacementScreen:
+class GameScreen:
     surface: Surface
     background: Surface
     width: int
@@ -25,18 +25,15 @@ class PlacementScreen:
     menu_icon: Surface
     menu_icon_rect: Rect
 
-    accept: Rect
-    accept_icon: Surface
-    menu_icon_rect: Rect
+    grid_player: Grid
+    grid_enemy: Grid
 
-    grid: Grid
-
-    def __init__(self, surface: Surface) -> None:
+    def __init__(self, surface: Surface, occupied: dict[tuple[int, int]]) -> None:
         self.surface = surface
 
         self.width, self.height = surface.get_size()
 
-        self.background = pygame.transform.scale(
+        self.background = self.background = pygame.transform.scale(
             pygame.image.load(BACKGROUND), 
             surface.get_size()
         )
@@ -58,72 +55,65 @@ class PlacementScreen:
 
         self.menu = Rect(
             0,
-            self.height - self.width // 10,
-            self.width // 10,
-            self.width // 10
+            self.height - self.width // 12,
+            self.width // 12,
+            self.width // 12
         )
 
         self.menu_icon = pygame.transform.scale(
             image.load(MENU_ICON),
-            (self.width * 0.05, self.width * 0.05)
+            (self.width * 0.04, self.width * 0.04)
         )
 
         self.menu_icon_rect = self.menu_icon.get_rect(
             center = (self.menu.centerx - self.width * 0.015, self.menu.centery + self.height * 0.02)
         )
 
-        self.accept = Rect(
-            self.width - self.width // 10,
-            self.height - self.width // 10,
-            self.width // 10,
-            self.width // 10
-        )
-
-        self.accept_icon = pygame.transform.scale(
-            image.load(ACCEPT_ICON),
-            (self.width * 0.05, self.width * 0.05)
-        )
-
-        self.accept_icon_rect = self.menu_icon.get_rect(
-            center = (self.accept.centerx + self.width * 0.015, self.accept.centery + self.height * 0.02)
-        )
-
-        self.grid = Grid(
+        self.grid_player = Grid(
             self.surface,
-            (self.height * 0.75, self.height * 0.75),
+            (self.height * 0.35, self.height * 0.35),
             10,
             10,
-            (self.surface.get_rect().centerx - (self.height * 0.75 - self.height * 0.75 // 10) // 2, self.height // 5),
-            self.height * 0.75 // 10,
+            (self.surface.get_rect().centerx + self.height * 0.2, self.height // 3),
+            self.height * 0.60 // 10,
             DARK_BROWN,
             LIGHT_BROWN
         )
-        
-        
-    def place_ship(self, position: tuple[int, int]) -> None:
-        self.grid.occupied[position] = True
+        self.grid_player.occupied = occupied
 
-        # grid[position] = coś  # nowy wygląd kwadratu na pozycji
+        self.grid_enemy = Grid(
+            self.surface,
+            (self.height * 0.35, self.height * 0.35),
+            10,
+            10,
+            (self.menu_icon_rect.right + self.height * 0.2, self.height // 3),
+            self.height * 0.60 // 10,
+            DARK_BROWN,
+            YELLOW
+        )
 
 
     def collide_field(self, position: tuple[int, int]) -> Optional[tuple[int, int]]:
-        for pos, component in self.grid.cells.items():
+        for pos, component in self.grid_enemy.cells.items():
             if component.rect.collidepoint(position):
                 return pos
+            
+
+    def update_ships(self, grid: Grid, board: GameBoard) -> None:
+        for ship in board.content.values():
+            for segment_coordinates, segment in ship.segments.items():
+                if segment.visible:
+                    grid.occupied[segment_coordinates] = True
 
 
     def draw(self) -> None:
-
         self.surface.blit(self.background, (0, 0))
-        
+
         draw.rect(self.surface, DARK_BROWN, self.bar)
         self.header.blit(self.surface)
 
-        draw.circle(self.surface, DARK_BROWN, self.menu.bottomleft, self.width // 10)
+        draw.circle(self.surface, DARK_BROWN, self.menu.bottomleft, self.width // 12)
         self.surface.blit(self.menu_icon, self.menu_icon_rect)
 
-        draw.circle(self.surface, DARK_BROWN, self.accept.bottomright, self.width // 10)
-        self.surface.blit(self.accept_icon, self.accept_icon_rect)
-
-        self.grid.draw()
-        
+        self.grid_player.draw()
+        self.grid_enemy.draw()
