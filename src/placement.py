@@ -5,7 +5,7 @@ from typing import Optional
 from component import Component
 from grid import Grid
 from drawing import draw_text
-from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON
+from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON, RETRY_ICON
 
 
 class PlacementScreen:
@@ -24,6 +24,13 @@ class PlacementScreen:
     accept: Rect
     accept_icon: Surface
     menu_icon_rect: Rect
+
+    retry: Rect
+    retry_icon: Surface
+    retry_icon_rect: Rect
+
+    auto_place_text: Component
+    auto_place: Rect
 
     grid: Grid
 
@@ -84,6 +91,37 @@ class PlacementScreen:
             center = (self.accept.centerx + self.width * 0.015, self.accept.centery + self.height * 0.02)
         )
 
+        self.retry = Rect(
+            self.width * 0.80,
+            self.height // 2 - self.height * 0.12,
+            self.width // 8,
+            self.width // 8
+        )
+
+        self.retry_icon = pygame.transform.scale(
+            image.load(RETRY_ICON),
+            (self.width * 0.05, self.width * 0.05)
+        )
+
+        self.retry_icon_rect = self.retry_icon.get_rect(
+            center = self.retry.center
+        )
+
+        self.auto_place = Rect(
+            self.width * 0.80,
+            self.height // 2 - self.height * 0.2,
+            self.width // 8,
+            self.height // 12
+        )
+
+        self.auto_place_text = draw_text(
+            'Auto place',
+            None,
+            self.height // 18,
+            WHITE,
+            (self.auto_place.centerx, self.auto_place.centery - self.height // 50)
+        )
+
         self.grid = Grid(
             self.surface,
             10,
@@ -136,6 +174,12 @@ class PlacementScreen:
 
         draw.circle(self.surface, DARK_BROWN, self.accept.bottomright, self.width // 10)
         self.surface.blit(self.accept_icon, self.accept_icon_rect)
+
+        draw.rect(self.surface, DARK_BROWN, self.auto_place)
+        self.auto_place_text.blit(self.surface)
+
+        draw.circle(self.surface, DARK_BROWN, self.retry.center, self.width // 25)
+        self.surface.blit(self.retry_icon, self.retry_icon_rect)
 
         self.grid.draw()
         

@@ -60,7 +60,8 @@ class App:
 
         self.player = GameBoard(
             *App.BOARD_SIZE,
-            App.SHIPS_LENS
+            App.SHIPS_LENS,
+            True
         )
 
         self.enemy = GameBoard(
@@ -121,6 +122,15 @@ class App:
                 case pygame.MOUSEBUTTONDOWN if self.state == State.PLACEMENT:
                     if self.placement.menu_icon_rect.collidepoint(mouse):
                         self.to_menu()
+
+                    if self.placement.retry_icon_rect.collidepoint(mouse):
+                        self.clear()
+
+                    if self.placement.auto_place.collidepoint(mouse):
+                        self.clear()
+                        self.player.auto_place()
+                        for coords in self.player.content.keys():
+                            self.placement.place_ship(coords)
 
                     if self.placement.accept_icon_rect.collidepoint(mouse) and self.player.ready:
                         self.to_game()
