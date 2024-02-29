@@ -4,11 +4,10 @@ from component import Component
 from typing import Optional
 
 from drawing import draw_text, draw_full_rect
-from drawing import WHITE, CHATHAMS_BLUE
+from drawing import WHITE, CHATHAMS_BLUE, RED, LIGHT_BLUE
 
 class Grid:
     surface: Surface
-    size: tuple[int, int]
     cols: int
     rows: int
     upperleft: tuple[int, int]
@@ -25,12 +24,13 @@ class Grid:
 
     highlighted: Optional[tuple[int, int]]
     occupied: Optional[dict[tuple[int, int]]]
+    hits: Optional[list[tuple[int, int]]]
+    misses: Optional[list[tuple[int, int]]]
 
 
     def __init__(
             self, 
             surface: Surface,
-            size: tuple[int, int],
             cols: int,
             rows: int,
             upperleft: tuple[int, int],
@@ -40,7 +40,6 @@ class Grid:
     ) -> None:
         
         self.surface = surface
-        self.size = size
         self.cols = cols
         self.rows = rows
         self.upperleft = upperleft
@@ -57,6 +56,18 @@ class Grid:
 
         self.highlighted_cells = dict(
             ((row, col), draw_full_rect(cell_size, highlighted_color, upperleft, (row, col)))
+            for row in range(rows)
+            for col in range(cols)
+        )
+
+        self.missed_cells = dict(
+            ((row, col), draw_full_rect(cell_size, LIGHT_BLUE, upperleft, (row, col)))
+            for row in range(rows)
+            for col in range(cols)
+        )
+
+        self.hit_cells = dict(
+            ((row, col), draw_full_rect(cell_size, RED, upperleft, (row, col)))
             for row in range(rows)
             for col in range(cols)
         )
@@ -94,10 +105,6 @@ class Grid:
         )
         
 
-    def highlight(self, cell: tuple[int, int]) -> None:
-        self.highlighted = cell
-
-
     def draw_cols(self, col: int) -> Component:
 
         centerx = self.axis_x.x + col * self.cell_size + self.cell_size // 2
@@ -105,7 +112,7 @@ class Grid:
 
         return draw_text(self.col_labels[col],
                          None,
-                         int(self.size[1] * 0.08),
+                         int(self.cell_size * 0.8),
                          WHITE,
                          (centerx, centery)
         )
@@ -118,10 +125,22 @@ class Grid:
 
         return draw_text(self.row_labels[row],
                          None,
-                         int(self.size[1] * 0.08),
+                         int(self.cell_size * 0.8),
                          WHITE,
                          (centerx, centery)
         )
+    
+
+    def highlight(self, cell: tuple[int, int]) -> None:
+        self.highlighted = cell
+
+    
+    def mark_hit(self, cell: tuple[int, int]) -> None:
+        self.hits.append(cell)
+
+    
+    def mark_miss(self, cell: tuple[int, int]) -> None:
+        self.misses.append(cell)
 
 
     def draw(self) -> None:

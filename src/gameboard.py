@@ -10,14 +10,15 @@ class GameBoard:
     current_ship: Optional[Ship]
     content: dict[tuple[int, int], Ship]
     ready: bool
-    debug: bool
+    score: int
+    visible: bool
 
     def __init__(
             self,
             rows: int,
             cols: int,
             ships_lens: list[int],
-            debug: bool
+            visible: bool = False
     ) -> None:
         
         self.rows = rows
@@ -26,11 +27,12 @@ class GameBoard:
         self.current_ship = next(self.ships)
         self.content = dict()
         self.ready = False
-        self.debug = debug
+        self.score = 0
+        self.visible = visible
 
     
     def add(self, coordinates: tuple[int, int]) -> bool:
-        if not self.validate_coord(coordinates):
+        if not self.validate(coordinates):
             return False
                 
         self.current_ship.add(coordinates, True)
@@ -68,47 +70,54 @@ class GameBoard:
         return 0 <= col <= self.cols-1 and 0 <= row <= self.rows-1
     
 
-    def border_coords(self) -> list[tuple[int, int]]:
-        border_coordinates = set()
+    def border(self) -> list[tuple[int, int]]:
+        coords = set()
+
         for ship in self.content.values():
             for segment_coords, segment in ship.segments.items():
                 for dx in [-1, 0, 1]:
                     for dy in [-1, 0, 1]:
                         neighbor_coords = (segment_coords[0] + dx, segment_coords[1] + dy)
-                        if (neighbor_coords != segment_coords and
-                                neighbor_coords not in ship.segments and
-                                self.in_range(neighbor_coords)
-                        ):
-                            border_coordinates.add(neighbor_coords)
-        return list(border_coordinates)
+
+                        if neighbor_coords != segment_coords\
+                                and neighbor_coords not in ship.segments\
+                                and self.in_range(neighbor_coords):
+                            
+                            coords.add(neighbor_coords)
+
+        return list(coords)
 
 
-    def validate_coord(self, coord: tuple[int, int]) -> bool:
+    def validate(self, coord: tuple[int, int]) -> bool:
         return (
             self.in_range(coord) and
             self.current_ship.check(coord) and
             coord not in self.content.keys() and
-            coord not in self.border_coords()
+            coord not in self.border()
         )
 
     
-    def random_run(self, len) -> list[tuple[int, int]]:
+    def random_run(self, length: int) -> list[tuple[int, int]]:
         while True:
             coord = self.random_coord()
-            if not self.validate_coord(coord):
+            
+            if not self.validate(coord):
                 continue
+
             direction = self.random_direction()
             turn = random.choice([-1, 1])
             new_coords = [coord]
 
-            for _ in range(len - 1):
+            for _ in range(length - 1):
                 if direction == Direction.HORIZONTAL:
                     coord = (coord[0] + turn, coord[1])
+
                 elif direction == Direction.VERTICAL:
                     coord = (coord[0], coord[1] + turn)
 
-                if not self.validate_coord(coord):
+                if not self.validate(coord):
                     break
+
                 new_coords.append(coord)   
 
             else:
@@ -120,7 +129,7 @@ class GameBoard:
             ship_coords = self.random_run(self.current_ship.length)
 
             for i in range(len(ship_coords)):
-                self.current_ship.add(ship_coords[i], self.debug)
+                self.current_ship.add(ship_coords[i], self.visible)
             
             self.update_content()
             self.current_ship = next(self.ships, None)

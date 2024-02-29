@@ -1,7 +1,14 @@
 import pygame
+import os
 from pygame import Surface, Rect
 from typing import Optional
 from component import Component
+
+MENU_BACKGROUND = os.path.join('../assets', 'menu_bg.jpg')
+GAME_BACKGROUND = os.path.join('../assets', 'game_bg.jpg')
+MENU_ICON = os.path.join('../assets', 'home-icon.png')
+ACCEPT_ICON = os.path.join('../assets', 'check-icon.png')
+DOOR_ICON = os.path.join('../assets', 'door-icon.png')
 
 WHITE = (255, 255, 255)
 LIGHT_PURPLE = (101, 88, 130)
@@ -9,6 +16,9 @@ DARK_BROWN = (82, 53, 38)
 LIGHT_BROWN = (148, 124, 112)
 CHATHAMS_BLUE = (35, 87, 107)
 YELLOW = (209, 171, 67)
+RED = (133, 52, 52)
+LIGHT_BLUE = (71, 144, 168)
+
 
 def draw_text(
         text: str, 

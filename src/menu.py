@@ -3,9 +3,8 @@ from pygame import Surface, Rect
 
 from component import Component
 from drawing import draw_text
-from drawing import LIGHT_PURPLE
+from drawing import LIGHT_PURPLE, MENU_BACKGROUND
 
-BACKGROUND = 'assets\menu_bg.jpg'
 
 class MenuScreen:
     surface: Surface
@@ -20,7 +19,7 @@ class MenuScreen:
 
         self.surface = surface
         self.background = pygame.transform.scale(
-            pygame.image.load(BACKGROUND), 
+            pygame.image.load(MENU_BACKGROUND), 
             surface.get_size()
         )
 
@@ -49,6 +48,7 @@ class MenuScreen:
             LIGHT_PURPLE, 
             (width // 2, height // 3 + 200)
         )
+
 
     def draw(self) -> None:
         self.surface.blit(self.background, (0, 0))

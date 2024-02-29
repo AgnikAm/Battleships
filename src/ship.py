@@ -97,6 +97,22 @@ class Ship:
                 )
             
 
+    def update_sunken(self) -> None:
+        if all(segment.destroyed for segment in self.segments.values()):
+            self.sunken = True
+
+    
+    def hit(self, coords: tuple[int, int]) -> bool:
+        segment = self.segments[coords]
+
+        if not segment or segment.destroyed:
+            return False
+        
+        segment.destroyed = True
+        self.update_sunken()
+        return True
+            
+
     @property
     def coordinates(self) -> list[tuple[int, int]]:
         return list(self.segments.keys())

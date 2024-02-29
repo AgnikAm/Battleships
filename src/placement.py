@@ -5,11 +5,7 @@ from typing import Optional
 from component import Component
 from grid import Grid
 from drawing import draw_text
-from drawing import WHITE, LIGHT_BROWN, DARK_BROWN
-
-BACKGROUND = 'assets\game_bg.jpg'
-MENU_ICON = 'assets\home-icon.png'
-ACCEPT_ICON = 'assets\check-icon.png'
+from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON
 
 
 class PlacementScreen:
@@ -37,7 +33,7 @@ class PlacementScreen:
         self.width, self.height = surface.get_size()
 
         self.background = pygame.transform.scale(
-            pygame.image.load(BACKGROUND), 
+            pygame.image.load(GAME_BACKGROUND), 
             surface.get_size()
         )
 
@@ -49,7 +45,7 @@ class PlacementScreen:
         )
 
         self.header = draw_text(
-            "Prepare for battle",
+            '',
             None,
             self.height // 15,
             WHITE,
@@ -90,7 +86,6 @@ class PlacementScreen:
 
         self.grid = Grid(
             self.surface,
-            (self.height * 0.75, self.height * 0.75),
             10,
             10,
             (self.surface.get_rect().centerx - (self.height * 0.75 - self.height * 0.75 // 10) // 2, self.height // 5),
@@ -103,13 +98,30 @@ class PlacementScreen:
     def place_ship(self, position: tuple[int, int]) -> None:
         self.grid.occupied[position] = True
 
-        # grid[position] = coś  # nowy wygląd kwadratu na pozycji
-
 
     def collide_field(self, position: tuple[int, int]) -> Optional[tuple[int, int]]:
         for pos, component in self.grid.cells.items():
             if component.rect.collidepoint(position):
                 return pos
+            
+
+    def set_header(self, length: Optional[int]) -> None:
+        if length:
+            self.header = draw_text(
+                f'Place ship of size {length}',
+                None,
+                self.height // 15,
+                WHITE,
+                (self.bar.centerx, self.bar.height // 5)
+            )
+        else:
+            self.header = draw_text(
+                'All ships are placed',
+                None,
+                self.height // 15,
+                WHITE,
+                (self.bar.centerx, self.bar.height // 5)
+            )
 
 
     def draw(self) -> None:

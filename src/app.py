@@ -1,13 +1,12 @@
 import pygame
 from pygame import Surface
 from pygame.time import Clock
-import copy
 
 from enum import Enum, auto
 
 from menu import MenuScreen
 from placement import PlacementScreen
-from gamescreen import GameScreen
+from game import GameScreen
 from gameboard import GameBoard
 
 from drawing import WHITE
@@ -21,10 +20,11 @@ class State(Enum):
 
 class App:
     TITLE = 'Battleships'
-    WINDOW_SIZE = 1920, 1020 # 1024, 768
+    WINDOW_SIZE = 1920, 1020
     FPS = 60
     BOARD_SIZE = 10, 10
-    SHIPS_LENS = [4, 3, 3, 2, 2, 2, 1, 1]
+    SHIPS_LENS = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
+    TEST = False
 
     state: State
     running: bool
@@ -60,36 +60,43 @@ class App:
 
         self.player = GameBoard(
             *App.BOARD_SIZE,
-            App.SHIPS_LENS,
-            False
+            App.SHIPS_LENS
         )
 
         self.enemy = GameBoard(
             *App.BOARD_SIZE,
             App.SHIPS_LENS,
-            True
+            self.TEST
         )
 
 
     def clear(self) -> None:
-        self.surface.fill(WHITE)
+        self.player = GameBoard(
+            *App.BOARD_SIZE,
+            App.SHIPS_LENS,
+        )
+        self.enemy = GameBoard(
+            *App.BOARD_SIZE,
+            App.SHIPS_LENS,
+            self.TEST
+        )
+        self.placement = PlacementScreen(self.surface)
+        self.game = GameScreen(self.surface, self.placement.grid.occupied)
 
 
     def to_menu(self) -> None:
         self.state = State.MENU
         self.clear()
-
+    
 
     def to_placement(self) -> None:
         self.enemy.auto_place()
         self.game.update_ships(self.game.grid_enemy, self.enemy)
         self.state = State.PLACEMENT
-        self.clear()
 
 
     def to_game(self) -> None:
         self.state = State.MOVE
-        self.clear()
 
 
     def quit(self) -> None:
@@ -140,13 +147,16 @@ class App:
                         self.game.grid_enemy.highlighted = None
 
 
-
     def handle_state(self) -> None:
         match self.state:
             case State.MENU:
                 self.menu.draw()
 
             case State.PLACEMENT:
+                if self.player.current_ship:
+                    self.placement.set_header(self.player.current_ship.length)
+                else:
+                    self.placement.set_header(None)
                 self.placement.draw()
                 
             case State.MOVE:
