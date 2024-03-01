@@ -103,6 +103,9 @@ class Grid:
             for row in range(rows)
             for col in range(cols)
         )
+
+        self.hits = []
+        self.misses = []
         
 
     def draw_cols(self, col: int) -> Component:
@@ -163,6 +166,12 @@ class Grid:
         for cell in self.cells.keys():
             if self.occupied[cell]:
                 self.cells[cell].blit(self.surface)
+
+            if cell in self.hits:
+                self.hit_cells[cell].blit(self.surface)
+
+            elif cell in self.misses:
+                self.missed_cells[cell].blit(self.surface)
             
         if self.highlighted is not None:
             self.highlighted_cells[self.highlighted].blit(self.surface)

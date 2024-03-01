@@ -24,11 +24,15 @@ class GameBoard:
         self.rows = rows
         self.cols = cols
         self.ships = iter(Ship(len) for len in ships_lens)
+        self.visible = visible
+
         self.current_ship = next(self.ships)
         self.content = dict()
         self.ready = False
+
         self.score = 0
-        self.visible = visible
+        self.hits = []
+        self.misses = []
 
     
     def add(self, coordinates: tuple[int, int]) -> bool:
@@ -70,10 +74,10 @@ class GameBoard:
         return 0 <= col <= self.cols-1 and 0 <= row <= self.rows-1
     
 
-    def border(self) -> list[tuple[int, int]]:
+    def border(self, Ships: dict[tuple[int, int], Ship]) -> list[tuple[int, int]]:
         coords = set()
 
-        for ship in self.content.values():
+        for ship in Ships.values():
             for segment_coords, segment in ship.segments.items():
                 for dx in [-1, 0, 1]:
                     for dy in [-1, 0, 1]:
@@ -93,7 +97,7 @@ class GameBoard:
             self.in_range(coord) and
             self.current_ship.check(coord) and
             coord not in self.content.keys() and
-            coord not in self.border()
+            coord not in self.border(self.content)
         )
 
     
@@ -136,3 +140,36 @@ class GameBoard:
 
             if self.current_ship is None:
                 self.ready = True
+
+    
+    def random_hit(self) -> tuple[int, int]:
+        coords = self.random_coord()
+        if coords not in self.misses and coords not in self.hits:
+            return coords
+        
+
+    def attack(self, enemy: 'GameBoard', coords: tuple[int, int] = None) -> bool:
+        if not coords:
+            coords = self.random_hit()
+
+        if coords in enemy.content:
+            targeted_ship = enemy.content[coords]
+
+            if targeted_ship.hit(coords):
+                self.score += 1
+                self.hits.append(coords)
+
+                return True
+            
+        else:
+            self.misses.append(coords)
+            return False
+    
+    
+    def all_ships_sunk(self) -> bool:
+        for ship in self.content.values():
+            if not ship.sunken:
+                return False
+
+        return True
+            

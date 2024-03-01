@@ -24,7 +24,7 @@ class App:
     FPS = 60
     BOARD_SIZE = 10, 10
     SHIPS_LENS = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
-    TEST = False
+    TEST = True
 
     state: State
     running: bool
@@ -96,8 +96,20 @@ class App:
         self.state = State.PLACEMENT
 
 
-    def to_game(self) -> None:
+    def to_move(self) -> None:
         self.state = State.MOVE
+
+    
+    def to_enemy_move(self) -> None:
+        self.state = State.ENEMY_MOVE
+
+        self.game.draw()
+        self.enemy.attack(self.player)
+        for hit in self.enemy.hits:
+            self.game.grid_player.mark_hit(hit)
+        for miss in self.enemy.misses:
+            self.game.grid_player.mark_miss(miss)
+        self.to_move()
 
 
     def quit(self) -> None:
@@ -128,12 +140,14 @@ class App:
 
                     if self.placement.auto_place.collidepoint(mouse):
                         self.clear()
+                        self.enemy.auto_place()
+                        self.game.update_ships(self.game.grid_enemy, self.enemy)
                         self.player.auto_place()
                         for coords in self.player.content.keys():
                             self.placement.place_ship(coords)
 
                     if self.placement.accept_icon_rect.collidepoint(mouse) and self.player.ready:
-                        self.to_game()
+                        self.to_move()
 
                     if (coords := self.placement.collide_field(mouse)) and not self.player.ready:
                         self.player.add(coords) and self.placement.place_ship(coords)
@@ -149,12 +163,25 @@ class App:
                     if self.game.menu_icon_rect.collidepoint(mouse):
                         self.to_menu()
 
+                    if coords := self.game.collide_field(mouse):
+                        if self.player.attack(self.enemy, coords):
+                            self.game.grid_enemy.mark_hit(coords)
+                        else:
+                            self.game.grid_enemy.mark_miss(coords)
+
+                        pygame.display.flip()
+                        self.to_enemy_move()
+
                 case pygame.MOUSEMOTION if self.state == State.MOVE:
                     if coords := self.game.collide_field(mouse):
                         self.game.grid_enemy.highlight(coords)
                         
                     else:
                         self.game.grid_enemy.highlighted = None
+
+                case pygame.MOUSEBUTTONDOWN if self.state == State.ENEMY_MOVE:
+                    if self.game.menu_icon_rect.collidepoint(mouse):
+                        self.to_menu()
 
 
     def handle_state(self) -> None:
