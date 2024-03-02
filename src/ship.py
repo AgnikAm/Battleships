@@ -111,8 +111,8 @@ class Ship:
         segment.destroyed = True
         self.update_sunken()
         return True
+    
             
-
     @property
     def coordinates(self) -> list[tuple[int, int]]:
         return list(self.segments.keys())

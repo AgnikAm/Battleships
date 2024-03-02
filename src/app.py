@@ -7,6 +7,8 @@ from enum import Enum, auto
 from menu import MenuScreen
 from placement import PlacementScreen
 from game import GameScreen
+from end import EndScreen
+
 from gameboard import GameBoard
 
 from drawing import WHITE
@@ -17,6 +19,7 @@ class State(Enum):
     PLACEMENT = auto()
     MOVE = auto()
     ENEMY_MOVE = auto()
+    END = auto()
 
 class App:
     TITLE = 'Battleships'
@@ -24,7 +27,7 @@ class App:
     FPS = 60
     BOARD_SIZE = 10, 10
     SHIPS_LENS = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
-    TEST = True
+    TEST = False
 
     state: State
     running: bool
@@ -35,6 +38,7 @@ class App:
     menu: MenuScreen
     placement: PlacementScreen
     game: GameScreen
+    end: EndScreen
 
     player: GameBoard
     enemy: GameBoard
@@ -57,6 +61,7 @@ class App:
         self.menu = MenuScreen(self.surface)
         self.placement = PlacementScreen(self.surface)
         self.game = GameScreen(self.surface, self.placement.grid.occupied)
+        self.end = EndScreen(self.surface)
 
         self.player = GameBoard(
             *App.BOARD_SIZE,
@@ -85,6 +90,17 @@ class App:
         self.game = GameScreen(self.surface, self.placement.grid.occupied)
 
 
+    def check_end(self) -> None:
+        if self.player.all_ships_sunk() or\
+                self.enemy.all_ships_sunk():
+
+            self.end.get_scores(self.player, self.enemy)
+            self.end.set_header()
+            self.end.set_player_scores()
+            self.end.set_enemy_scores()
+        
+            self.to_end()
+
     def to_menu(self) -> None:
         self.state = State.MENU
         self.clear()
@@ -98,18 +114,24 @@ class App:
 
     def to_move(self) -> None:
         self.state = State.MOVE
+        self.check_end()
 
     
     def to_enemy_move(self) -> None:
         self.state = State.ENEMY_MOVE
 
         self.game.draw()
+        self.check_end()
         self.enemy.attack(self.player)
         for hit in self.enemy.hits:
             self.game.grid_player.mark_hit(hit)
         for miss in self.enemy.misses:
             self.game.grid_player.mark_miss(miss)
         self.to_move()
+
+    
+    def to_end(self) -> None:
+        self.state = State.END
 
 
     def quit(self) -> None:
@@ -183,6 +205,10 @@ class App:
                     if self.game.menu_icon_rect.collidepoint(mouse):
                         self.to_menu()
 
+                case pygame.MOUSEBUTTONDOWN if self.state == State.END:
+                    if self.end.menu_icon_rect.collidepoint(mouse):
+                        self.quit()
+
 
     def handle_state(self) -> None:
         match self.state:
@@ -201,6 +227,9 @@ class App:
 
             case State.ENEMY_MOVE:
                 pass
+
+            case State.END:
+                self.end.draw()
 
 
     def run(self) -> None:
