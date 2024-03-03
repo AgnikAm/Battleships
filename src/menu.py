@@ -1,9 +1,9 @@
 import pygame
-from pygame import Surface, Rect
+from pygame import Surface, Rect, image
 
 from component import Component
 from drawing import draw_text
-from drawing import LIGHT_PURPLE, MENU_BACKGROUND
+from drawing import LIGHT_PURPLE, MENU_BACKGROUND, MENU_BOX
 
 
 class MenuScreen:
@@ -13,6 +13,9 @@ class MenuScreen:
     title: Component
     start: Component
     quit: Component
+
+    textbox_image: Surface
+    textbox_image_rect: Rect
 
 
     def __init__(self, surface: Surface) -> None:
@@ -49,9 +52,20 @@ class MenuScreen:
             (width // 2, height // 3 + 200)
         )
 
+        self.textbox_image = pygame.transform.scale(
+            image.load(MENU_BOX),
+            (800, 200)
+        )
+
+        self.textbox_image_rect = self.textbox_image.get_rect(
+            center = (self.title.rect.centerx, self.title.rect.centery)
+        )
+
 
     def draw(self) -> None:
         self.surface.blit(self.background, (0, 0))
+
+        self.surface.blit(self.textbox_image, self.textbox_image_rect)
 
         self.title.blit(self.surface)
         self.start.blit(self.surface)

@@ -5,8 +5,7 @@ from typing import Optional
 from component import Component
 from grid import Grid
 from drawing import draw_text
-from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON, RETRY_ICON
-
+from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON, RETRY_ICON, TEST
 
 class PlacementScreen:
     surface: Surface
@@ -15,6 +14,8 @@ class PlacementScreen:
     height: int
 
     bar: Rect
+    bar_image: Surface
+    bar_image_rect: Rect
     header: Component
 
     menu: Rect
@@ -49,6 +50,15 @@ class PlacementScreen:
             0,
             self.height * 0.75,
             self.height * 0.1
+        )
+
+        self.bar_image = pygame.transform.scale(
+            image.load(TEST),
+            (self.width * 0.40, self.width * 0.06)
+        )
+
+        self.bar_image_rect = self.bar_image.get_rect(
+            center = (self.bar.centerx, self.bar.centery + self.height * 0.02)
         )
 
         self.header = draw_text(
@@ -126,7 +136,7 @@ class PlacementScreen:
             self.surface,
             10,
             10,
-            (self.surface.get_rect().centerx - (self.height * 0.75 - self.height * 0.75 // 10) // 2, self.height // 5),
+            (self.surface.get_rect().centerx - (self.height * 0.75 - self.height * 0.75 // 10) // 2, self.height * 0.22),
             self.height * 0.75 // 10,
             DARK_BROWN,
             LIGHT_BROWN
@@ -166,7 +176,7 @@ class PlacementScreen:
 
         self.surface.blit(self.background, (0, 0))
         
-        draw.rect(self.surface, DARK_BROWN, self.bar)
+        self.surface.blit(self.bar_image, self.bar_image_rect)
         self.header.blit(self.surface)
 
         draw.circle(self.surface, DARK_BROWN, self.menu.bottomleft, self.width // 10)
