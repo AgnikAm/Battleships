@@ -9,6 +9,8 @@ GAME_BACKGROUND = os.path.join('../assets', 'game_bg.jpg')
 MENU_ICON = os.path.join('../assets', 'home-icon.png')
 ACCEPT_ICON = os.path.join('../assets', 'check-icon.png')
 RETRY_ICON = os.path.join('../assets', 'retry-icon.png')
+TEST = os.path.join('../assets', 'test.png')
+MENU_BOX = os.path.join('../assets', 'menu_box.png')
 
 WHITE = (255, 255, 255)
 LIGHT_PURPLE = (101, 88, 130)
