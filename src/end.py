@@ -4,26 +4,28 @@ from pygame import Surface, Rect, draw, image
 from component import Component
 from gameboard import GameBoard
 from drawing import draw_text
-from drawing import WHITE, DARK_BROWN, GAME_BACKGROUND, MENU_ICON
+from drawing import WHITE, DARK_BROWN, GAME_BACKGROUND, MENU_ICON, TEXT_BOX_BIG
 
 
 class EndScreen:
     surface: Surface
-    background: Surface
     width: int
     height: int
-
-    player_score: int
-    enemy_score: int
+    background: Surface
 
     bar: Rect
-    header: Component
-    player_score_text: Component
-    enemy_score_text: Component
+    bar_image: Surface
+    bar_image_rect: Rect
 
     menu: Rect
     menu_icon: Surface
     menu_icon_rect: Rect
+
+    header: Component
+    player_score: int
+    enemy_score: int
+    player_score_text: Component
+    enemy_score_text: Component
 
     def __init__(self, surface: Surface) -> None:
         self.surface = surface
@@ -42,6 +44,15 @@ class EndScreen:
             self.height * 0.75
         )
 
+        self.bar_image = pygame.transform.scale(
+            image.load(TEXT_BOX_BIG),
+            (self.width // 2, self.width // 3)
+        )
+
+        self.bar_image_rect = self.bar_image.get_rect(
+            center = self.bar.center
+        )
+
         self.menu = Rect(
             self.width - self.width // 12,
             self.height - self.width // 12,
@@ -51,11 +62,11 @@ class EndScreen:
 
         self.menu_icon = pygame.transform.scale(
             image.load(MENU_ICON),
-            (self.width * 0.04, self.width * 0.04)
+            (self.width * 0.06, self.width * 0.06)
         )
 
         self.menu_icon_rect = self.menu_icon.get_rect(
-            center = (self.menu.centerx + self.width * 0.015, self.menu.centery + self.height * 0.02)
+            center = (1840, 940)
         )
 
 
@@ -116,10 +127,10 @@ class EndScreen:
     def draw(self) -> None:
         self.surface.blit(self.background, (0, 0))
 
-        draw.rect(self.surface, DARK_BROWN, self.bar)
+        self.surface.blit(self.bar_image, self.bar_image_rect)
+
         self.header.blit(self.surface)
         self.player_score_text.blit(self.surface)
         self.enemy_score_text.blit(self.surface)
 
-        draw.circle(self.surface, DARK_BROWN, self.menu.bottomright, self.width // 12)
         self.surface.blit(self.menu_icon, self.menu_icon_rect)

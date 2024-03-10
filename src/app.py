@@ -101,6 +101,7 @@ class App:
         
             self.to_end()
 
+
     def to_menu(self) -> None:
         self.state = State.MENU
         self.clear()
@@ -122,11 +123,20 @@ class App:
 
         self.game.draw()
         self.check_end()
-        self.enemy.attack(self.player)
-        for hit in self.enemy.hits:
-            self.game.grid_player.mark_hit(hit)
-        for miss in self.enemy.misses:
-            self.game.grid_player.mark_miss(miss)
+
+        if self.enemy.attack(self.player):
+            last_hit = self.enemy.hits[-1]
+            self.game.grid_player.mark_hit(last_hit)
+
+            if self.player.content[last_hit].sunken:
+                self.game.set_player_text('Sunken')
+            else:
+                self.game.set_player_text('Hit')
+
+        else:
+            self.game.grid_player.mark_miss(self.enemy.misses[-1])
+            self.game.set_player_text('Miss')
+
         self.to_move()
 
     
@@ -188,8 +198,13 @@ class App:
                     if coords := self.game.collide_field(mouse):
                         if self.player.attack(self.enemy, coords):
                             self.game.grid_enemy.mark_hit(coords)
+                            if self.enemy.content[coords].sunken:
+                                self.game.set_enemy_text('Sunken')
+                            else:
+                                self.game.set_enemy_text('Hit')
                         else:
                             self.game.grid_enemy.mark_miss(coords)
+                            self.game.set_enemy_text('Miss')
 
                         pygame.display.flip()
                         self.to_enemy_move()

@@ -5,33 +5,33 @@ from typing import Optional
 from component import Component
 from grid import Grid
 from drawing import draw_text
-from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON, RETRY_ICON, TEST
+from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON, RETRY_ICON, TEXT_BOX, PLACEMENT_PLATE
 
 class PlacementScreen:
     surface: Surface
-    background: Surface
     width: int
     height: int
+    background: Surface
 
     bar: Rect
     bar_image: Surface
     bar_image_rect: Rect
     header: Component
 
-    menu: Rect
     menu_icon: Surface
     menu_icon_rect: Rect
 
-    accept: Rect
     accept_icon: Surface
-    menu_icon_rect: Rect
+    accept_icon_rect: Rect
 
-    retry: Rect
+    auto_place: Rect
+    auto_place_text: Component
+
+    plate_image: Surface
+    plate_rect: Rect
+
     retry_icon: Surface
     retry_icon_rect: Rect
-
-    auto_place_text: Component
-    auto_place: Rect
 
     grid: Grid
 
@@ -53,7 +53,7 @@ class PlacementScreen:
         )
 
         self.bar_image = pygame.transform.scale(
-            image.load(TEST),
+            image.load(TEXT_BOX),
             (self.width * 0.40, self.width * 0.06)
         )
 
@@ -66,55 +66,25 @@ class PlacementScreen:
             None,
             self.height // 15,
             WHITE,
-            (self.bar.centerx, self.bar.height // 5)
-        )
-
-        self.menu = Rect(
-            0,
-            self.height - self.width // 10,
-            self.width // 10,
-            self.width // 10
+            (self.bar.centerx, self.bar.height * 0.6)
         )
 
         self.menu_icon = pygame.transform.scale(
             image.load(MENU_ICON),
-            (self.width * 0.05, self.width * 0.05)
+            (self.width * 0.06, self.width * 0.06)
         )
 
         self.menu_icon_rect = self.menu_icon.get_rect(
-            center = (self.menu.centerx - self.width * 0.015, self.menu.centery + self.height * 0.02)
-        )
-
-        self.accept = Rect(
-            self.width - self.width // 10,
-            self.height - self.width // 10,
-            self.width // 10,
-            self.width // 10
+            center = (80, 940)
         )
 
         self.accept_icon = pygame.transform.scale(
             image.load(ACCEPT_ICON),
-            (self.width * 0.05, self.width * 0.05)
+            (self.width * 0.06, self.width * 0.06)
         )
 
         self.accept_icon_rect = self.menu_icon.get_rect(
-            center = (self.accept.centerx + self.width * 0.015, self.accept.centery + self.height * 0.02)
-        )
-
-        self.retry = Rect(
-            self.width * 0.80,
-            self.height // 2 - self.height * 0.12,
-            self.width // 8,
-            self.width // 8
-        )
-
-        self.retry_icon = pygame.transform.scale(
-            image.load(RETRY_ICON),
-            (self.width * 0.05, self.width * 0.05)
-        )
-
-        self.retry_icon_rect = self.retry_icon.get_rect(
-            center = self.retry.center
+            center = (1840, 940)
         )
 
         self.auto_place = Rect(
@@ -130,6 +100,24 @@ class PlacementScreen:
             self.height // 18,
             WHITE,
             (self.auto_place.centerx, self.auto_place.centery - self.height // 50)
+        )
+
+        self.plate_image = pygame.transform.scale(
+            image.load(PLACEMENT_PLATE),
+            (240, 90)
+        )
+
+        self.plate_rect = self.plate_image.get_rect(
+            center = self.auto_place_text.rect.center
+        )
+
+        self.retry_icon = pygame.transform.scale(
+            image.load(RETRY_ICON),
+            (self.width * 0.06, self.width * 0.06)
+        )
+
+        self.retry_icon_rect = self.retry_icon.get_rect(
+            center = (self.auto_place_text.rect.centerx, self.auto_place_text.rect.centery + 150)
         )
 
         self.grid = Grid(
@@ -160,7 +148,7 @@ class PlacementScreen:
                 None,
                 self.height // 15,
                 WHITE,
-                (self.bar.centerx, self.bar.height // 5)
+                (self.bar.centerx, self.bar.height * 0.6)
             )
         else:
             self.header = draw_text(
@@ -168,7 +156,7 @@ class PlacementScreen:
                 None,
                 self.height // 15,
                 WHITE,
-                (self.bar.centerx, self.bar.height // 5)
+                (self.bar.centerx, self.bar.height * 0.6)
             )
 
 
@@ -179,16 +167,11 @@ class PlacementScreen:
         self.surface.blit(self.bar_image, self.bar_image_rect)
         self.header.blit(self.surface)
 
-        draw.circle(self.surface, DARK_BROWN, self.menu.bottomleft, self.width // 10)
         self.surface.blit(self.menu_icon, self.menu_icon_rect)
-
-        draw.circle(self.surface, DARK_BROWN, self.accept.bottomright, self.width // 10)
         self.surface.blit(self.accept_icon, self.accept_icon_rect)
 
-        draw.rect(self.surface, DARK_BROWN, self.auto_place)
+        self.surface.blit(self.plate_image, self.plate_rect)
         self.auto_place_text.blit(self.surface)
-
-        draw.circle(self.surface, DARK_BROWN, self.retry.center, self.width // 25)
         self.surface.blit(self.retry_icon, self.retry_icon_rect)
 
         self.grid.draw()
