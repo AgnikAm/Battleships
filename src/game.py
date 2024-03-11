@@ -6,7 +6,7 @@ from component import Component
 from grid import Grid
 from gameboard import GameBoard
 from drawing import draw_text
-from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, YELLOW, GAME_BACKGROUND, MENU_ICON, TEXT_BOX, ALKHEMIKAL
+from drawing import DARK_BROWN, LIGHT_BROWN, YELLOW, GAME_BACKGROUND, MENU_ICON, TEXT_BOX, ALKHEMIKAL
 
 
 class GameScreen:
@@ -67,7 +67,7 @@ class GameScreen:
             'Player',
             ALKHEMIKAL,
             self.height // 15,
-            WHITE,
+            DARK_BROWN,
             (self.bar_player.centerx, self.bar_player.centery - self.bar_player.height * 0.17)
         )
 
@@ -75,7 +75,7 @@ class GameScreen:
             'Enemy',
             ALKHEMIKAL,
             self.height // 15,
-            WHITE,
+            DARK_BROWN,
             (self.bar_enemy.centerx, self.bar_enemy.centery - self.bar_enemy.height * 0.17)
         )
 
@@ -120,7 +120,7 @@ class GameScreen:
             f'{text}',
             ALKHEMIKAL,
             self.height // 15,
-            WHITE,
+            DARK_BROWN,
             (self.bar_enemy.centerx, self.bar_enemy.centery - self.bar_enemy.height * 0.17)
         )
 
@@ -130,7 +130,7 @@ class GameScreen:
             f'{text}',
             ALKHEMIKAL,
             self.height // 15,
-            WHITE,
+            DARK_BROWN,
             (self.bar_player.centerx, self.bar_player.centery - self.bar_player.height * 0.17)
         )
 

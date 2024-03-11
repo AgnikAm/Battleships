@@ -4,7 +4,7 @@ from pygame import Surface, Rect, draw, image
 from component import Component
 from gameboard import GameBoard
 from drawing import draw_text
-from drawing import WHITE, DARK_BROWN, GAME_BACKGROUND, MENU_ICON, TEXT_BOX_BIG
+from drawing import DARK_BROWN, GAME_BACKGROUND, MENU_ICON, TEXT_BOX_BIG, ALKHEMIKAL
 
 
 class EndScreen:
@@ -79,27 +79,27 @@ class EndScreen:
         if self.player_score > self.enemy_score:
             self.header = draw_text(
                 'Winner: player',
-                None,
+                ALKHEMIKAL,
                 self.height // 10,
-                WHITE,
+                DARK_BROWN,
                 (self.bar.centerx, self.bar.centery - self.height // 10)
             )
 
         elif self.player_score < self.enemy_score:
             self.header = draw_text(
                 'Winner: enemy',
-                None,
+                ALKHEMIKAL,
                 self.height // 10,
-                WHITE,
+                DARK_BROWN,
                 (self.bar.centerx, self.bar.centery - self.height // 10)
             )
         
         else:
             self.header = draw_text(
                 'Draw',
-                None,
+                ALKHEMIKAL,
                 self.height // 10,
-                WHITE,
+                DARK_BROWN,
                 (self.bar.centerx, self.bar.centery - self.height // 10)
             )
 
@@ -107,9 +107,9 @@ class EndScreen:
     def set_player_scores(self) -> None:
         self.player_score_text = draw_text(
             f"Player's score: {self.player_score}",
-            None,
+            ALKHEMIKAL,
             self.height // 12,
-            WHITE,
+            DARK_BROWN,
             (self.bar.centerx, self.bar.centery)
         )
 
@@ -117,9 +117,9 @@ class EndScreen:
     def set_enemy_scores(self) -> None:
         self.enemy_score_text = draw_text(
             f"Enemy's score {self.enemy_score}",
-            None,
+            ALKHEMIKAL,
             self.height // 12,
-            WHITE,
+            DARK_BROWN,
             (self.bar.centerx, self.bar.centery + self.height // 12)
         )
 

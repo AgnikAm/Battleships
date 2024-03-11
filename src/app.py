@@ -5,6 +5,7 @@ from pygame.time import Clock
 from enum import Enum, auto
 
 from menu import MenuScreen
+from rules import RulesScreen
 from placement import PlacementScreen
 from game import GameScreen
 from end import EndScreen
@@ -19,6 +20,7 @@ class State(Enum):
     PLACEMENT = auto()
     MOVE = auto()
     ENEMY_MOVE = auto()
+    RULES = auto()
     END = auto()
 
 class App:
@@ -59,6 +61,7 @@ class App:
         self.running = False
 
         self.menu = MenuScreen(self.surface)
+        self.rules = RulesScreen(self.surface)
         self.placement = PlacementScreen(self.surface)
         self.game = GameScreen(self.surface, self.placement.grid.occupied)
         self.end = EndScreen(self.surface)
@@ -139,7 +142,12 @@ class App:
 
         self.to_move()
 
-    
+
+    def to_rules(self) -> None:
+        self.rules.draw(self.rules.placement_rules)
+        self.state = State.RULES
+
+
     def to_end(self) -> None:
         self.state = State.END
 
@@ -157,27 +165,42 @@ class App:
                     self.running = False
 
                 case pygame.MOUSEBUTTONDOWN if self.state == State.MENU:
-                    if self.menu.start.rect.collidepoint(mouse):
+                    if self.menu.start_rect.collidepoint(mouse):
                         self.to_placement()
+
+                    if self.menu.rules_rect.collidepoint(mouse):
+                        self.to_rules()
                     
-                    if self.menu.quit.rect.collidepoint(mouse):
+                    if self.menu.quit_rect.collidepoint(mouse):
                         self.quit()
 
                 case pygame.MOUSEMOTION if self.state == State.MENU:
-                    if self.menu.start.rect.collidepoint(mouse):
+                    if self.menu.start_rect.collidepoint(mouse):
                         self.menu.highlight = 'start'
                         pygame.display.update()
 
-                    elif self.menu.rules.rect.collidepoint(mouse):
+                    elif self.menu.rules_rect.collidepoint(mouse):
                         self.menu.highlight = 'rules'
                         pygame.display.update()
 
-                    elif self.menu.quit.rect.collidepoint(mouse):
+                    elif self.menu.quit_rect.collidepoint(mouse):
                         self.menu.highlight = 'quit'
                         pygame.display.update()
                         
                     else:
-                        self.menu.highlight = 'None'                    
+                        self.menu.highlight = 'None'
+
+                case pygame.MOUSEBUTTONDOWN if self.state == State.RULES:
+                    if self.rules.menu_icon_rect.collidepoint(mouse):
+                        self.to_menu() 
+
+                    if self.rules.forward_icon_rect.collidepoint(mouse):
+                        self.rules.draw(self.rules.battle_rules)
+                        pygame.display.update()
+
+                    if self.rules.backward_icon_rect.collidepoint(mouse):
+                        self.rules.draw(self.rules.placement_rules)
+                        pygame.display.update()     
 
                 case pygame.MOUSEBUTTONDOWN if self.state == State.PLACEMENT:
                     if self.placement.menu_icon_rect.collidepoint(mouse):
@@ -238,13 +261,16 @@ class App:
 
                 case pygame.MOUSEBUTTONDOWN if self.state == State.END:
                     if self.end.menu_icon_rect.collidepoint(mouse):
-                        self.quit()
+                        self.to_menu()
 
 
     def handle_state(self) -> None:
         match self.state:
             case State.MENU:
                 self.menu.draw()
+
+            case State.RULES:
+                pass
 
             case State.PLACEMENT:
                 if self.player.current_ship:

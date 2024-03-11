@@ -147,7 +147,7 @@ class PlacementScreen:
                 f'Place ship of size {length}',
                 ALKHEMIKAL,
                 self.height // 15,
-                WHITE,
+                DARK_BROWN,
                 (self.bar.centerx, self.bar.height * 0.45)
             )
         else:
@@ -155,7 +155,7 @@ class PlacementScreen:
                 'All ships are placed',
                 ALKHEMIKAL,
                 self.height // 15,
-                WHITE,
+                DARK_BROWN,
                 (self.bar.centerx, self.bar.height * 0.45)
             )
 

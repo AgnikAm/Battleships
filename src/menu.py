@@ -3,7 +3,7 @@ from pygame import Surface, Rect, image
 
 from component import Component
 from drawing import draw_text
-from drawing import LIGHT_PURPLE, WHITE, MENU_BACKGROUND, MENU_BOX, MENU_PLATE, MENU_PLATE_HIGHLIGHT, ALKHEMIKAL
+from drawing import WHITE, MENU_BACKGROUND, MENU_BOX, MENU_PLATE, MENU_PLATE_HIGHLIGHT, ALKHEMIKAL
 
 
 class MenuScreen:
@@ -15,6 +15,10 @@ class MenuScreen:
     start: Component
     rules: Component
     quit: Component
+
+    start_rect: Rect
+    rules_rect: Rect
+    quit_rect: Rect
 
     textbox_image: Surface
     textbox_rect: Rect
@@ -66,6 +70,27 @@ class MenuScreen:
             int(height * 0.08), 
             WHITE, 
             (490, 600)
+        )
+
+        self.start_rect = Rect(
+            350,
+            290,
+            280,
+            90
+        )
+
+        self.rules_rect = Rect(
+            350,
+            440,
+            280,
+            90
+        )
+
+        self.quit_rect = Rect(
+            350,
+            590,
+            280,
+            90
         )
 
         self.textbox_image = pygame.transform.scale(
