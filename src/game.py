@@ -6,7 +6,7 @@ from component import Component
 from grid import Grid
 from gameboard import GameBoard
 from drawing import draw_text
-from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, YELLOW, GAME_BACKGROUND, MENU_ICON, TEXT_BOX
+from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, YELLOW, GAME_BACKGROUND, MENU_ICON, TEXT_BOX, ALKHEMIKAL
 
 
 class GameScreen:
@@ -46,37 +46,37 @@ class GameScreen:
 
         self.bar_player = Rect(
             self.surface.get_rect().centerx + 180,
-            self.height * 0.1,
+            self.height * 0.07,
             self.height * 0.66,
-            self.height * 0.1
+            self.height * 0.15
         )
 
         self.bar_enemy = Rect(
             self.menu_icon_rect.right + 180,
-            self.height * 0.1,
+            self.height * 0.07,
             self.height * 0.66,
-            self.height * 0.1
+            self.height * 0.15
         )
 
         self.bar_image = pygame.transform.scale(
             image.load(TEXT_BOX),
-            (self.width * 0.3, self.width * 0.05)
+            (self.width * 0.3, self.width * 0.06)
         )
 
         self.player_text = draw_text(
             'Player',
-            None,
+            ALKHEMIKAL,
             self.height // 15,
             WHITE,
-            (self.bar_player.centerx, self.bar_player.centery - self.bar_player.height * 0.1)
+            (self.bar_player.centerx, self.bar_player.centery - self.bar_player.height * 0.17)
         )
 
         self.enemy_text = draw_text(
             'Enemy',
-            None,
+            ALKHEMIKAL,
             self.height // 15,
             WHITE,
-            (self.bar_enemy.centerx, self.bar_enemy.centery - self.bar_enemy.height * 0.1)
+            (self.bar_enemy.centerx, self.bar_enemy.centery - self.bar_enemy.height * 0.17)
         )
 
         self.grid_player = Grid(
@@ -118,20 +118,20 @@ class GameScreen:
     def set_enemy_text(self, text: str) -> None:
         self.enemy_text = draw_text(
             f'{text}',
-            None,
+            ALKHEMIKAL,
             self.height // 15,
             WHITE,
-            (self.bar_enemy.centerx, self.bar_enemy.centery - self.bar_enemy.height * 0.1)
+            (self.bar_enemy.centerx, self.bar_enemy.centery - self.bar_enemy.height * 0.17)
         )
 
     
     def set_player_text(self, text: str) -> None:
         self.player_text = draw_text(
             f'{text}',
-            None,
+            ALKHEMIKAL,
             self.height // 15,
             WHITE,
-            (self.bar_player.centerx, self.bar_player.centery - self.bar_player.height * 0.1)
+            (self.bar_player.centerx, self.bar_player.centery - self.bar_player.height * 0.17)
         )
 
 

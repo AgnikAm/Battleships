@@ -5,7 +5,7 @@ from typing import Optional
 from component import Component
 from grid import Grid
 from drawing import draw_text
-from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON, RETRY_ICON, TEXT_BOX, PLACEMENT_PLATE
+from drawing import WHITE, DARK_BROWN, LIGHT_BROWN, GAME_BACKGROUND, MENU_ICON, ACCEPT_ICON, RETRY_ICON, TEXT_BOX, PLACEMENT_PLATE, ALKHEMIKAL
 
 class PlacementScreen:
     surface: Surface
@@ -96,7 +96,7 @@ class PlacementScreen:
 
         self.auto_place_text = draw_text(
             'Auto place',
-            None,
+            ALKHEMIKAL,
             self.height // 18,
             WHITE,
             (self.auto_place.centerx, self.auto_place.centery - self.height // 50)
@@ -104,7 +104,7 @@ class PlacementScreen:
 
         self.plate_image = pygame.transform.scale(
             image.load(PLACEMENT_PLATE),
-            (240, 90)
+            (300, 90)
         )
 
         self.plate_rect = self.plate_image.get_rect(
@@ -145,18 +145,18 @@ class PlacementScreen:
         if length:
             self.header = draw_text(
                 f'Place ship of size {length}',
-                None,
+                ALKHEMIKAL,
                 self.height // 15,
                 WHITE,
-                (self.bar.centerx, self.bar.height * 0.6)
+                (self.bar.centerx, self.bar.height * 0.45)
             )
         else:
             self.header = draw_text(
                 'All ships are placed',
-                None,
+                ALKHEMIKAL,
                 self.height // 15,
                 WHITE,
-                (self.bar.centerx, self.bar.height * 0.6)
+                (self.bar.centerx, self.bar.height * 0.45)
             )
 
 

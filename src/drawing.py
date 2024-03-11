@@ -4,15 +4,16 @@ from pygame import Surface, Rect
 from typing import Optional
 from component import Component
 
-MENU_BACKGROUND = os.path.join('../assets', 'menu_bg.jpg')
-GAME_BACKGROUND = os.path.join('../assets', 'game_bg.jpg')
+MENU_BACKGROUND = os.path.join('../assets', 'menu_bg.png')
+GAME_BACKGROUND = os.path.join('../assets', 'game_bg.png')
 MENU_ICON = os.path.join('../assets', 'home-icon.png')
 ACCEPT_ICON = os.path.join('../assets', 'check-icon.png')
 RETRY_ICON = os.path.join('../assets', 'retry-icon.png')
 TEXT_BOX = os.path.join('../assets', 'text_box.png')
 TEXT_BOX_BIG = os.path.join('../assets', 'text_box_big.png')
-MENU_BOX = os.path.join('../assets', 'menu_box.png')
+MENU_BOX = os.path.join('../assets', 'menu_box1.png')
 MENU_PLATE = os.path.join('../assets', 'menu_plate.png')
+MENU_PLATE_HIGHLIGHT = os.path.join('../assets', 'menu_plate_highlight.png')
 PLACEMENT_PLATE = os.path.join('../assets', 'placement_plate.png')
 
 WHITE = (255, 255, 255)
@@ -23,6 +24,8 @@ CHATHAMS_BLUE = (35, 87, 107)
 YELLOW = (209, 171, 67)
 RED = (133, 52, 52)
 LIGHT_BLUE = (71, 144, 168)
+
+ALKHEMIKAL = os.path.join('../assets', 'Alkhemikal.ttf')
 
 
 def draw_text(

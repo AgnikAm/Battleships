@@ -3,7 +3,7 @@ from pygame import Surface, Rect, image
 
 from component import Component
 from drawing import draw_text
-from drawing import LIGHT_PURPLE, MENU_BACKGROUND, MENU_BOX, MENU_PLATE
+from drawing import LIGHT_PURPLE, WHITE, MENU_BACKGROUND, MENU_BOX, MENU_PLATE, MENU_PLATE_HIGHLIGHT, ALKHEMIKAL
 
 
 class MenuScreen:
@@ -21,6 +21,9 @@ class MenuScreen:
 
     menu_plate_image: Surface
     menu_plate_rect: Rect
+    menu_plate_highlight_image:Surface
+
+    highlight: str
 
 
     def __init__(self, surface: Surface) -> None:
@@ -37,32 +40,32 @@ class MenuScreen:
             "Battleships", 
             None, 
             int(height * 0.13), 
-            LIGHT_PURPLE, 
-            (width // 4, height // 8)
+            WHITE, 
+            (width * 0.27, height // 8)
         )
 
         self.start = draw_text(
             "Start", 
-            None, 
+            ALKHEMIKAL, 
             int(height * 0.08), 
-            LIGHT_PURPLE, 
-            (485, 310)
+            WHITE, 
+            (490, 300)
         )
 
         self.rules = draw_text(
             "Rules", 
-            None, 
+            ALKHEMIKAL, 
             int(height * 0.08), 
-            LIGHT_PURPLE, 
-            (485, 460)
+            WHITE, 
+            (490, 450)
         )
 
         self.quit = draw_text(
             "Quit", 
-            None, 
+            ALKHEMIKAL, 
             int(height * 0.08), 
-            LIGHT_PURPLE, 
-            (485, 610)
+            WHITE, 
+            (490, 600)
         )
 
         self.textbox_image = pygame.transform.scale(
@@ -79,16 +82,38 @@ class MenuScreen:
             (300, 150)
         )
 
+        self.menu_plate_highlight_image = pygame.transform.scale(
+            image.load(MENU_PLATE_HIGHLIGHT),
+            (375, 190)
+        )
+
+        self.highlight = "None"
+
+
+    def draw_highlight(self, coords: tuple[int, int]) -> None:
+        self.surface.blit(self.menu_plate_highlight_image, coords)
+
 
     def draw(self) -> None:
         self.surface.blit(self.background, (0, 0))
 
-        self.surface.blit(self.menu_plate_image, (340, 230))
-        self.surface.blit(self.menu_plate_image, (340, 380))
-        self.surface.blit(self.menu_plate_image, (340, 530))
+        if self.highlight == "start":
+            self.surface.blit(self.menu_plate_highlight_image, (303, 230))
+        else:
+            self.surface.blit(self.menu_plate_image, (340, 230))
+
+        if self.highlight == "rules":
+            self.surface.blit(self.menu_plate_highlight_image, (303, 380))
+        else:
+            self.surface.blit(self.menu_plate_image, (340, 380))
+
+        if self.highlight == "quit":
+            self.surface.blit(self.menu_plate_highlight_image, (303, 530))
+        else:
+            self.surface.blit(self.menu_plate_image, (340, 530))
+
         self.surface.blit(self.textbox_image, self.textbox_rect)
 
-        self.title.blit(self.surface)
         self.start.blit(self.surface)
         self.rules.blit(self.surface)
         self.quit.blit(self.surface)

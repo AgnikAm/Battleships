@@ -4,7 +4,7 @@ from component import Component
 from typing import Optional
 
 from drawing import draw_text, draw_full_rect
-from drawing import WHITE, CHATHAMS_BLUE, RED, LIGHT_BLUE
+from drawing import WHITE, CHATHAMS_BLUE, RED, LIGHT_BLUE, ALKHEMIKAL
 
 class Grid:
     surface: Surface
@@ -111,10 +111,10 @@ class Grid:
     def draw_cols(self, col: int) -> Component:
 
         centerx = self.axis_x.x + col * self.cell_size + self.cell_size // 2
-        centery = self.axis_x.y + self.cell_size // 4
+        centery = self.axis_x.y + self.cell_size // 7
 
         return draw_text(self.col_labels[col],
-                         None,
+                         ALKHEMIKAL,
                          int(self.cell_size * 0.8),
                          WHITE,
                          (centerx, centery)
@@ -124,10 +124,10 @@ class Grid:
     def draw_rows(self, row: int) -> Component:
 
         centerx = self.axis_y.x + self.cell_size // 2
-        centery = self.axis_y.y + row * self.cell_size + self.cell_size // 4
+        centery = self.axis_y.y + row * self.cell_size + self.cell_size // 7
 
         return draw_text(self.row_labels[row],
-                         None,
+                         ALKHEMIKAL,
                          int(self.cell_size * 0.8),
                          WHITE,
                          (centerx, centery)

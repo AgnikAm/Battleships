@@ -163,6 +163,22 @@ class App:
                     if self.menu.quit.rect.collidepoint(mouse):
                         self.quit()
 
+                case pygame.MOUSEMOTION if self.state == State.MENU:
+                    if self.menu.start.rect.collidepoint(mouse):
+                        self.menu.highlight = 'start'
+                        pygame.display.update()
+
+                    elif self.menu.rules.rect.collidepoint(mouse):
+                        self.menu.highlight = 'rules'
+                        pygame.display.update()
+
+                    elif self.menu.quit.rect.collidepoint(mouse):
+                        self.menu.highlight = 'quit'
+                        pygame.display.update()
+                        
+                    else:
+                        self.menu.highlight = 'None'                    
+
                 case pygame.MOUSEBUTTONDOWN if self.state == State.PLACEMENT:
                     if self.placement.menu_icon_rect.collidepoint(mouse):
                         self.to_menu()
