@@ -78,27 +78,27 @@ class EndScreen:
     def set_header(self):
         if self.player_score > self.enemy_score:
             self.header = draw_text(
-                'Winner: player',
+                "Congratulations, Captain!",
                 ALKHEMIKAL,
-                self.height // 10,
+                self.height // 14,
                 DARK_BROWN,
                 (self.bar.centerx, self.bar.centery - self.height // 10)
             )
 
         elif self.player_score < self.enemy_score:
             self.header = draw_text(
-                'Winner: enemy',
+                "Ye be walkin' the plank this time, matey!",
                 ALKHEMIKAL,
-                self.height // 10,
+                self.height // 20,
                 DARK_BROWN,
                 (self.bar.centerx, self.bar.centery - self.height // 10)
             )
         
         else:
             self.header = draw_text(
-                'Draw',
+                'Arrr! The sea is undecided today',
                 ALKHEMIKAL,
-                self.height // 10,
+                self.height // 16,
                 DARK_BROWN,
                 (self.bar.centerx, self.bar.centery - self.height // 10)
             )
